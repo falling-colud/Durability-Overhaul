@@ -117,6 +117,7 @@ public abstract class MixinRepairAnvil {
                     int i3;
                     for (i3 = 0; l2 > 0 && i3 < itemstack2.getCount(); ++i3) {
                         int j3 = itemstack1.getDamageValue() - l2;
+                        System.out.println(j3);
                         itemstack1.setDamageValue(j3);
                         ++i;
                         l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / d);

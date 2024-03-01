@@ -5,7 +5,7 @@ import dev.architectury.event.events.common.BlockEvent;
 import dev.architectury.event.events.common.InteractionEvent;
 import net.cloud.improved_damage.blocks.EnchanterBlock;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -39,7 +39,7 @@ public class ImprovedDamageEvents {
 
     public static void onRightClick() {
         InteractionEvent.RIGHT_CLICK_BLOCK.register((player, hand, blockPos, direction) -> {
-            Level level = player.level();
+            Level level = player.level;
             BlockState blockState = level.getBlockState(blockPos);
             Block block = blockState.getBlock();
 
@@ -60,12 +60,12 @@ public class ImprovedDamageEvents {
                     return EventResult.pass();
                 }
 
-                @Nullable SoundEvent sound = BuiltInRegistries.SOUND_EVENT.get(new ResourceLocation("block.anvil.use"));
+                @Nullable SoundEvent sound = Registry.SOUND_EVENT.get(new ResourceLocation("block.anvil.use"));
                 double x = blockPos.getX();
                 double y = blockPos.getY();
                 double z = blockPos.getZ();
                 if (!level.isClientSide()) {
-                    level.playSound(null, new BlockPos((int) x, (int) y, (int) z), sound, SoundSource.BLOCKS, 1, 1);
+                    level.playSound(null, new BlockPos(x, y, z), sound, SoundSource.BLOCKS, 1, 1);
                 } else {
                     level.playLocalSound(x, y, z, sound, SoundSource.BLOCKS, 1, 1, false);
                 }
@@ -91,12 +91,12 @@ public class ImprovedDamageEvents {
                     return EventResult.pass();
                 }
 
-                @Nullable SoundEvent sound = SoundEvent.createFixedRangeEvent(new ResourceLocation("block.amethyst_block.place"), 12);
+                @Nullable SoundEvent sound = Registry.SOUND_EVENT.get(new ResourceLocation("block.amethyst_block.place"));
                 double x = blockPos.getX();
                 double y = blockPos.getY();
                 double z = blockPos.getZ();
                 if (!level.isClientSide()) {
-                    level.playSound(null, new BlockPos((int) x, (int) y, (int) z), sound, SoundSource.BLOCKS, 1, 1);
+                    level.playSound(null, new BlockPos(x, y, z), sound, SoundSource.BLOCKS, 1, 1);
                 } else {
                     level.playLocalSound(x, y, z, sound, SoundSource.BLOCKS, 1, 1, false);
                 }

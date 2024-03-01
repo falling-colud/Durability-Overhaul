@@ -7,10 +7,7 @@ import net.cloud.improved_damage.mixin.ItemCombinerMenuAccessor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.DataSlot;
-import net.minecraft.world.inventory.ItemCombinerMenu;
-import net.minecraft.world.inventory.ItemCombinerMenuSlotDefinition;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -211,14 +208,6 @@ public class EnchanterMenu extends ItemCombinerMenu {
             this.resultSlots.setItem(0, itemstack1);
             this.broadcastChanges();
         }
-    }
-
-    protected ItemCombinerMenuSlotDefinition createInputSlotDefinitions() {
-        return ItemCombinerMenuSlotDefinition.create().withSlot(0, 27, 47, (itemStack) -> {
-            return true;
-        }).withSlot(1, 76, 47, (itemStack) -> {
-            return true;
-        }).withResultSlot(2, 134, 47).build();
     }
 
     public static int calculateIncreasedRepairCost(int p_39026_) {

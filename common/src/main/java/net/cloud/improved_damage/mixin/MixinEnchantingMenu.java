@@ -1,7 +1,7 @@
 package net.cloud.improved_damage.mixin;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -67,7 +67,7 @@ public abstract class MixinEnchantingMenu {
                             List<EnchantmentInstance> list = this.getEnchantmentList(itemstack, l, this.costs[l]);
                             if (list != null && !list.isEmpty()) {
                                 EnchantmentInstance enchantmentinstance = list.get(this.random.nextInt(list.size()));
-                                this.enchantClue[l] = BuiltInRegistries.ENCHANTMENT.getId(enchantmentinstance.enchantment);
+                                this.enchantClue[l] = Registry.ENCHANTMENT.getId(enchantmentinstance.enchantment);
                                 this.levelClue[l] = enchantmentinstance.level;
                             }
                         }

@@ -30,9 +30,10 @@ public class ImprovedDamageConfiguration {
 		configs = new ModConfigProvider();
 		createConfigs();
 
-		CONFIG = SimpleConfig.of(ImprovedDamage.MODID + "_config").provider(configs).request();
+		CONFIG = SimpleConfig.of(ImprovedDamage.MODID).provider(configs).request();
 
 		assignConfigs();
+
 	}
 
 	private static void createConfigs() {
@@ -47,7 +48,7 @@ public class ImprovedDamageConfiguration {
 		configs.addKeyValuePair(new Pair<>("key.improved_damage.mending_durability_mult", 2), "the multiplier by which mending will multiply the original durability when applied");
 		configs.addKeyValuePair(new Pair<>("key.improved_damage.anvil_repair_enabled", true), "if anvils can be repaired with iron blocks");
 		configs.addKeyValuePair(new Pair<>("key.improved_damage.crafting_repair_enabled", false), "if items can be repaired in the crafting grid");
-		
+
 	}
 
 	private static void assignConfigs() {

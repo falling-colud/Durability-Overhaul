@@ -5,7 +5,7 @@ import com.google.common.collect.Multimap;
 import net.cloud.improved_damage.configuration.ImprovedDamageConfiguration;
 import net.cloud.improved_damage.init.ImprovedDamageModEnchantments;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -17,7 +17,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
@@ -62,8 +61,6 @@ public abstract class MixinItemStack {
     protected static Collection<Component> expandBlockState(String string) {
         return null;
     }
-
-    @Shadow @Nullable private Entity entityRepresentation;
 
     @Inject(method = "getBarWidth", at = @At("RETURN"), cancellable = true)
     public void getBarWidth(CallbackInfoReturnable<Integer> cir) {
@@ -148,7 +145,7 @@ public abstract class MixinItemStack {
         
         ItemStack stack = ((ItemStack) (Object) this);
         
-        if (!livingEntity.level().isClientSide && (!(livingEntity instanceof Player) || !((Player)livingEntity).getAbilities().instabuild)) {
+        if (!livingEntity.level.isClientSide && (!(livingEntity instanceof Player) || !((Player)livingEntity).getAbilities().instabuild)) {
             if (stack.isDamageableItem()) {
                 if (stack.hurt(i, livingEntity.getRandom(), livingEntity instanceof ServerPlayer ? (ServerPlayer)livingEntity : null)) {
                     consumer.accept(livingEntity);
@@ -244,18 +241,18 @@ public abstract class MixinItemStack {
             for (int i = 0; i < listtag.size(); ++i) {
                 CompoundTag compoundtag = listtag.getCompound(i);
                 if (!compoundtag.contains("Slot", 8) || compoundtag.getString("Slot").equals(slot.getName())) {
-                    Optional<Attribute> optional = BuiltInRegistries.ATTRIBUTE.getOptional(ResourceLocation.tryParse(compoundtag.getString("AttributeName")));
+                    Optional<Attribute> optional = Registry.ATTRIBUTE.getOptional(ResourceLocation.tryParse(compoundtag.getString("AttributeName")));
                     if (optional.isPresent()) {
                         AttributeModifier attributemodifier = AttributeModifier.load(compoundtag);
                         if (attributemodifier != null && attributemodifier.getId().getLeastSignificantBits() != 0L && attributemodifier.getId().getMostSignificantBits() != 0L) {
                             if (attributemodifier.getId().equals(damageUUID)) {
                                 compoundtag = dmgAttribute.save();
-                                compoundtag.putString("AttributeName", BuiltInRegistries.ATTRIBUTE.getKey(Attributes.ATTACK_DAMAGE).toString());
+                                compoundtag.putString("AttributeName", Registry.ATTRIBUTE.getKey(Attributes.ATTACK_DAMAGE).toString());
                                 compoundtag.putString("Slot", slot.getName());
                                 stack.getTag().getList("AttributeModifiers", 10).set(i, compoundtag);
                             } else if (attributemodifier.getId().equals(speedUUID)) {
                                 compoundtag = speedAttribute.save();
-                                compoundtag.putString("AttributeName", BuiltInRegistries.ATTRIBUTE.getKey(Attributes.ATTACK_SPEED).toString());
+                                compoundtag.putString("AttributeName", Registry.ATTRIBUTE.getKey(Attributes.ATTACK_SPEED).toString());
                                 compoundtag.putString("Slot", slot.getName());
                                 stack.getTag().getList("AttributeModifiers", 10).set(i, compoundtag);
                             }
@@ -301,7 +298,7 @@ public abstract class MixinItemStack {
 
         int j = this.getHideFlags();
         if (shouldShowInTooltip(j, ItemStack.TooltipPart.ADDITIONAL)) {
-            stack.getItem().appendHoverText(stack, p_41652_ == null ? null : p_41652_.level(), list, p_41653_);
+            stack.getItem().appendHoverText(stack, p_41652_ == null ? null : p_41652_.level, list, p_41653_);
         }
 
         if (stack.hasTag()) {
@@ -418,7 +415,7 @@ public abstract class MixinItemStack {
                     list.add(Component.translatable("item.durability", stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage()));
                 }
 
-                list.add((Component.literal(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString())).withStyle(ChatFormatting.DARK_GRAY));
+                list.add((Component.literal(Registry.ITEM.getKey(stack.getItem()).toString())).withStyle(ChatFormatting.DARK_GRAY));
                 if (stack.hasTag()) {
                     list.add((Component.translatable("item.nbt_tags", this.tag.getAllKeys().size())).withStyle(ChatFormatting.DARK_GRAY));
                 }

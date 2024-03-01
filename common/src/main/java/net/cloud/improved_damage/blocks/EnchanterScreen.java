@@ -1,12 +1,12 @@
 package net.cloud.improved_damage.blocks;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -31,6 +31,11 @@ public class EnchanterScreen extends ItemCombinerScreen<EnchanterMenu> {
         this.init(p_97886_, p_97887_, p_97888_);
     }
 
+    public void removed() {
+        super.removed();
+        this.minecraft.keyboardHandler.setSendRepeatsToGui(false);
+    }
+
     public boolean keyPressed(int p_97878_, int p_97879_, int p_97880_) {
         if (p_97878_ == 256) {
             this.minecraft.player.closeContainer();
@@ -39,38 +44,28 @@ public class EnchanterScreen extends ItemCombinerScreen<EnchanterMenu> {
         return super.keyPressed(p_97878_, p_97879_, p_97880_);
     }
 
-    protected void renderLabels(GuiGraphics guiGraphics, int i, int j) {
-        super.renderLabels(guiGraphics, i, j);
-        int k = (this.menu).getCost();
-        if (k > 0) {
-            int l = 8453920;
-            Object component;
-            if (!(this.menu).getSlot(2).hasItem()) {
+    protected void renderLabels(PoseStack p_97890_, int p_97891_, int p_97892_) {
+        RenderSystem.disableBlend();
+        super.renderLabels(p_97890_, p_97891_, p_97892_);
+        int i = this.menu.getCost();
+        if (i > 0) {
+            int j = 8453920;
+            Component component;
+            if (!this.menu.getSlot(2).hasItem()) {
                 component = null;
             } else {
-                component = Component.translatable("container.improved_damage.enchant.cost", k);
-                if (!(this.menu).getSlot(2).mayPickup(this.player)) {
-                    l = 16736352;
+                component = Component.translatable("container.improved_damage.enchant.cost", i);
+                if (!this.menu.getSlot(2).mayPickup(this.player)) {
+                    j = 16736352;
                 }
             }
 
             if (component != null) {
-                int m = this.imageWidth - 8 - this.font.width((FormattedText)component) - 2;
-                guiGraphics.fill(m - 2, 67, this.imageWidth - 8, 79, 1325400064);
-                guiGraphics.drawString(this.font, (Component)component, m, 69, l);
+                int k = this.imageWidth - 8 - this.font.width(component) - 2;
+                int l = 69;
+                fill(p_97890_, k - 2, 67, this.imageWidth - 8, 79, 1325400064);
+                this.font.drawShadow(p_97890_, component, (float)k, 69.0F, j);
             }
-        }
-
-    }
-
-    protected void renderBg(GuiGraphics guiGraphics, float f, int i, int j) {
-        super.renderBg(guiGraphics, f, i, j);
-        guiGraphics.blit(ENCHANTER_LOCATION, this.leftPos + 59, this.topPos + 20, 0, this.imageHeight + ((this.menu).getSlot(0).hasItem() ? 0 : 16), 110, 16);
-    }
-
-    protected void renderErrorIcon(GuiGraphics guiGraphics, int i, int j) {
-        if (((this.menu).getSlot(0).hasItem() || (this.menu).getSlot(1).hasItem()) && !(this.menu).getSlot((this.menu).getResultSlot()).hasItem()) {
-            guiGraphics.blit(ENCHANTER_LOCATION, i + 99, j + 45, this.imageWidth, 0, 28, 21);
         }
 
     }
