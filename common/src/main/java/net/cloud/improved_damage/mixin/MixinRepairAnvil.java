@@ -1,7 +1,7 @@
 package net.cloud.improved_damage.mixin;
 
 import net.cloud.improved_damage.init.ImprovedDamageModBlocks;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
@@ -23,9 +23,6 @@ import java.util.Map;
 
 @Mixin(AnvilMenu.class)
 public abstract class MixinRepairAnvil {
-
-    @Shadow
-    public abstract int getCost();
 
     @Shadow
     public int repairItemCountCost;
@@ -155,7 +152,7 @@ public abstract class MixinRepairAnvil {
             } else if (!this.itemName.equals(itemstack.getHoverName().getString())) {
                 k = 1;
                 i += k;
-                itemstack1.setHoverName(Component.literal(this.itemName));
+                itemstack1.setHoverName(new TextComponent(this.itemName));
             }
 
             if (i <= 0) {
@@ -200,4 +197,10 @@ public abstract class MixinRepairAnvil {
         }
         return l1;
     }
+
+    /**
+     * @author
+     * @reason
+     */
+
 }

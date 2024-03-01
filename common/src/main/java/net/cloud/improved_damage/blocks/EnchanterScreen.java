@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -54,7 +55,7 @@ public class EnchanterScreen extends ItemCombinerScreen<EnchanterMenu> {
             if (!this.menu.getSlot(2).hasItem()) {
                 component = null;
             } else {
-                component = Component.translatable("container.improved_damage.enchant.cost", i);
+                component = new TranslatableComponent("container.improved_damage.enchant.cost", i);
                 if (!this.menu.getSlot(2).mayPickup(this.player)) {
                     j = 16736352;
                 }

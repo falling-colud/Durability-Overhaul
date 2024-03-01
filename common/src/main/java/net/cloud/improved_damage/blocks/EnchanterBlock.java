@@ -4,6 +4,7 @@ import net.cloud.improved_damage.init.ImprovedDamageModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -104,7 +105,7 @@ public class EnchanterBlock extends Block {
         }
     }
 
-    private static final Component CONTAINER_TITLE = Component.translatable("container.improved_damage.enchant");
+    private static final Component CONTAINER_TITLE = new TranslatableComponent("container.improved_damage.enchant");
 
     public InteractionResult use(BlockState p_48804_, Level p_48805_, BlockPos p_48806_, Player p_48807_, InteractionHand p_48808_, BlockHitResult p_48809_) {
         if (this == ImprovedDamageModBlocks.BROKEN_ENCHANTER.get()) {

@@ -2,21 +2,22 @@ package net.cloud.improved_damage.mixin;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Streams;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.cloud.improved_damage.configuration.ImprovedDamageConfiguration;
 import net.cloud.improved_damage.init.ImprovedDamageModEnchantments;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
@@ -27,6 +28,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,17 +39,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static net.cloud.improved_damage.ImprovedDamage.damageUUID;
 import static net.cloud.improved_damage.ImprovedDamage.speedUUID;
 
 
-@Mixin(value = ItemStack.class, priority = 1200)
+@Mixin(ItemStack.class)
 public abstract class MixinItemStack {
     //TODO add comments
 
@@ -56,11 +56,6 @@ public abstract class MixinItemStack {
     private CompoundTag tag;
 
     @Shadow protected abstract int getHideFlags();
-
-    @Shadow
-    protected static Collection<Component> expandBlockState(String string) {
-        return null;
-    }
 
     @Inject(method = "getBarWidth", at = @At("RETURN"), cancellable = true)
     public void getBarWidth(CallbackInfoReturnable<Integer> cir) {
@@ -125,7 +120,7 @@ public abstract class MixinItemStack {
     }
 
     @Inject(method = "hurt", at = @At(value = "RETURN"), cancellable = true)
-    public void hurt(int p_41630_, RandomSource p_41631_, ServerPlayer p_41632_, CallbackInfoReturnable<Boolean> cir) {
+    public void hurt(int p_41630_, Random p_41631_, ServerPlayer p_41632_, CallbackInfoReturnable<Boolean> cir) {
         ItemStack stack = ((ItemStack) (Object) this);
         if (cir.getReturnValue()) {
             if (!stack.getOrCreateTag().getBoolean("broken")) {
@@ -142,9 +137,9 @@ public abstract class MixinItemStack {
     @Inject(method = "hurtAndBreak", at = @At(value = "HEAD"), cancellable = true)
     public <T extends LivingEntity> void hurtAndBreak(int i, T livingEntity, Consumer<T> consumer, CallbackInfo ci) {
         ci.cancel();
-        
+
         ItemStack stack = ((ItemStack) (Object) this);
-        
+
         if (!livingEntity.level.isClientSide && (!(livingEntity instanceof Player) || !((Player)livingEntity).getAbilities().instabuild)) {
             if (stack.isDamageableItem()) {
                 if (stack.hurt(i, livingEntity.getRandom(), livingEntity instanceof ServerPlayer ? (ServerPlayer)livingEntity : null)) {
@@ -161,14 +156,14 @@ public abstract class MixinItemStack {
     }
 
     @Inject(method = "setDamageValue", at = @At(value = "HEAD"), cancellable = true)
-    public void setDamageValue(int damage, CallbackInfo ci) {
+    public void setDamageValue(int damage, CallbackInfo cir) {
         ItemStack stack = ((ItemStack) (Object) this);
 
         boolean broken = stack.getOrCreateTag().getBoolean("broken");
 
         if (broken) {
             if (damage >= stack.getMaxDamage()) {
-                ci.cancel();
+                cir.cancel();
                 ((ItemStack) (Object) this).getOrCreateTag().putInt("Damage", stack.getMaxDamage());
                 return;
             }
@@ -209,6 +204,7 @@ public abstract class MixinItemStack {
         AttributeModifier speedAttribute = null;
 
         for (AttributeModifier attributeModifier : stack.getItem().getDefaultInstance().getAttributeModifiers(slot).values()) {
+
             if (attributeModifier.getId().equals(damageUUID)) {
                 // attack damage is default if broken
                 double finalDmg = 0;
@@ -279,9 +275,9 @@ public abstract class MixinItemStack {
         MutableComponent mutablecomponent;
 
         if (stack.getOrCreateTag().getBoolean("broken")) {
-            mutablecomponent = (Component.literal("Broken ")).append(stack.getHoverName()).withStyle(ChatFormatting.RED);
+            mutablecomponent = (new TextComponent("Broken ")).append(stack.getHoverName()).withStyle(ChatFormatting.RED);
         } else {
-            mutablecomponent = (Component.literal("")).append(stack.getHoverName()).withStyle(stack.getRarity().color);
+            mutablecomponent = (new TextComponent("")).append(stack.getHoverName()).withStyle(stack.getRarity().color);
         }
 
         if (stack.hasCustomHoverName()) {
@@ -292,7 +288,7 @@ public abstract class MixinItemStack {
         if (!p_41653_.isAdvanced() && !stack.hasCustomHoverName() && stack.is(Items.FILLED_MAP)) {
             Integer integer = MapItem.getMapId(stack);
             if (integer != null) {
-                list.add((Component.literal("#" + integer)).withStyle(ChatFormatting.GRAY));
+                list.add((new TextComponent("#" + integer)).withStyle(ChatFormatting.GRAY));
             }
         }
 
@@ -310,9 +306,9 @@ public abstract class MixinItemStack {
                 CompoundTag compoundtag = this.tag.getCompound("display");
                 if (shouldShowInTooltip(j, ItemStack.TooltipPart.DYE) && compoundtag.contains("color", 99)) {
                     if (p_41653_.isAdvanced()) {
-                        list.add((Component.translatable("item.color", String.format("#%06X", compoundtag.getInt("color")))).withStyle(ChatFormatting.GRAY));
+                        list.add((new TranslatableComponent("item.color", String.format("#%06X", compoundtag.getInt("color")))).withStyle(ChatFormatting.GRAY));
                     } else {
-                        list.add((Component.translatable("item.dyed")).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+                        list.add((new TranslatableComponent("item.dyed")).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
                     }
                 }
 
@@ -339,8 +335,8 @@ public abstract class MixinItemStack {
             for (EquipmentSlot equipmentslot : EquipmentSlot.values()) {
                 Multimap<Attribute, AttributeModifier> multimap = stack.getAttributeModifiers(equipmentslot);
                 if (!multimap.isEmpty()) {
-                    list.add(Component.empty());
-                    list.add((Component.translatable("item.modifiers." + equipmentslot.getName())).withStyle(ChatFormatting.GRAY));
+                    list.add(TextComponent.EMPTY);
+                    list.add((new TranslatableComponent("item.modifiers." + equipmentslot.getName())).withStyle(ChatFormatting.GRAY));
 
                     for (Map.Entry<Attribute, AttributeModifier> entry : multimap.entries()) {
                         AttributeModifier attributemodifier = entry.getValue();
@@ -369,12 +365,12 @@ public abstract class MixinItemStack {
                         }
 
                         if (flag) {
-                            list.add((Component.literal(" ")).append(Component.translatable("attribute.modifier.equals." + attributemodifier.getOperation().toValue(), ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(d1), Component.translatable(entry.getKey().getDescriptionId()))).withStyle(ChatFormatting.DARK_GREEN));
+                            list.add((new TextComponent(" ")).append(new TranslatableComponent("attribute.modifier.equals." + attributemodifier.getOperation().toValue(), ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(d1), new TranslatableComponent(entry.getKey().getDescriptionId()))).withStyle(ChatFormatting.DARK_GREEN));
                         } else if (d0 > 0.0D) {
-                            list.add((Component.translatable("attribute.modifier.plus." + attributemodifier.getOperation().toValue(), ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(d1), Component.translatable(entry.getKey().getDescriptionId()))).withStyle(ChatFormatting.BLUE));
+                            list.add((new TranslatableComponent("attribute.modifier.plus." + attributemodifier.getOperation().toValue(), ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(d1), new TranslatableComponent(entry.getKey().getDescriptionId()))).withStyle(ChatFormatting.BLUE));
                         } else if (d0 < 0.0D) {
                             d1 *= -1.0D;
-                            list.add((Component.translatable("attribute.modifier.take." + attributemodifier.getOperation().toValue(), ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(d1), Component.translatable(entry.getKey().getDescriptionId()))).withStyle(ChatFormatting.RED));
+                            list.add((new TranslatableComponent("attribute.modifier.take." + attributemodifier.getOperation().toValue(), ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(d1), new TranslatableComponent(entry.getKey().getDescriptionId()))).withStyle(ChatFormatting.RED));
                         }
                     }
                 }
@@ -382,14 +378,14 @@ public abstract class MixinItemStack {
 
             if (stack.hasTag()) {
                 if (shouldShowInTooltip(j, ItemStack.TooltipPart.UNBREAKABLE) && this.tag.getBoolean("Unbreakable")) {
-                    list.add((Component.translatable("item.unbreakable")).withStyle(ChatFormatting.BLUE));
+                    list.add((new TranslatableComponent("item.unbreakable")).withStyle(ChatFormatting.BLUE));
                 }
 
                 if (shouldShowInTooltip(j, ItemStack.TooltipPart.CAN_DESTROY) && this.tag.contains("CanDestroy", 9)) {
                     ListTag listtag1 = this.tag.getList("CanDestroy", 8);
                     if (!listtag1.isEmpty()) {
-                        list.add(Component.empty());
-                        list.add((Component.translatable("item.canBreak")).withStyle(ChatFormatting.GRAY));
+                        list.add(TextComponent.EMPTY);
+                        list.add((new TranslatableComponent("item.canBreak")).withStyle(ChatFormatting.GRAY));
 
                         for(int k = 0; k < listtag1.size(); ++k) {
                             list.addAll(expandBlockState(listtag1.getString(k)));
@@ -400,8 +396,8 @@ public abstract class MixinItemStack {
                 if (shouldShowInTooltip(j, ItemStack.TooltipPart.CAN_PLACE) && this.tag.contains("CanPlaceOn", 9)) {
                     ListTag listtag2 = this.tag.getList("CanPlaceOn", 8);
                     if (!listtag2.isEmpty()) {
-                        list.add(Component.empty());
-                        list.add((Component.translatable("item.canPlace")).withStyle(ChatFormatting.GRAY));
+                        list.add(TextComponent.EMPTY);
+                        list.add((new TranslatableComponent("item.canPlace")).withStyle(ChatFormatting.GRAY));
 
                         for(int l = 0; l < listtag2.size(); ++l) {
                             list.addAll(expandBlockState(listtag2.getString(l)));
@@ -412,12 +408,12 @@ public abstract class MixinItemStack {
 
             if (p_41653_.isAdvanced()) {
                 if (stack.isDamaged()) {
-                    list.add(Component.translatable("item.durability", stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage()));
+                    list.add(new TranslatableComponent("item.durability", stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage()));
                 }
 
-                list.add((Component.literal(Registry.ITEM.getKey(stack.getItem()).toString())).withStyle(ChatFormatting.DARK_GRAY));
+                list.add((new TextComponent(Registry.ITEM.getKey(stack.getItem()).toString())).withStyle(ChatFormatting.DARK_GRAY));
                 if (stack.hasTag()) {
-                    list.add((Component.translatable("item.nbt_tags", this.tag.getAllKeys().size())).withStyle(ChatFormatting.DARK_GRAY));
+                    list.add((new TranslatableComponent("item.nbt_tags", this.tag.getAllKeys().size())).withStyle(ChatFormatting.DARK_GRAY));
                 }
             }
 
@@ -436,5 +432,32 @@ public abstract class MixinItemStack {
             cir.setReturnValue(cir.getReturnValue() * ImprovedDamageConfiguration.MENDING_DURABILITY_MULT);
     }
 
+
+    private static Collection<Component> expandBlockState(String p_41762_) {
+        try {
+            BlockStateParser blockstateparser = (new BlockStateParser(new StringReader(p_41762_), true)).parse(true);
+            BlockState blockstate = blockstateparser.getState();
+            TagKey<Block> tagkey = blockstateparser.getTag();
+            boolean flag = blockstate != null;
+            boolean flag1 = tagkey != null;
+            if (flag) {
+                return Lists.newArrayList(blockstate.getBlock().getName().withStyle(ChatFormatting.DARK_GRAY));
+            }
+
+            if (flag1) {
+                List<Component> list = Streams.stream(Registry.BLOCK.getTagOrEmpty(tagkey)).map((p_204120_) -> {
+                    return p_204120_.value().getName();
+                }).map((p_204125_) -> {
+                    return p_204125_.withStyle(ChatFormatting.DARK_GRAY);
+                }).collect(Collectors.toList());
+                if (!list.isEmpty()) {
+                    return list;
+                }
+            }
+        } catch (CommandSyntaxException commandsyntaxexception) {
+        }
+
+        return Lists.newArrayList((new TextComponent("missingno")).withStyle(ChatFormatting.DARK_GRAY));
+    }
 
 }

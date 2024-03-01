@@ -2,7 +2,6 @@ package net.cloud.improved_damage.mixin;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -15,6 +14,7 @@ import net.minecraft.world.level.block.EnchantmentTableBlock;
 import org.spongepowered.asm.mixin.*;
 
 import java.util.List;
+import java.util.Random;
 
 @Mixin(EnchantmentMenu.class)
 public abstract class MixinEnchantingMenu {
@@ -22,7 +22,7 @@ public abstract class MixinEnchantingMenu {
 
     @Shadow @Final private Container enchantSlots;
     @Shadow @Final private ContainerLevelAccess access;
-    @Shadow @Final private RandomSource random;
+    @Shadow @Final private Random random;
     @Shadow @Final private DataSlot enchantmentSeed;
     @Shadow @Final public int[] costs;
     @Shadow @Final public int[] enchantClue;

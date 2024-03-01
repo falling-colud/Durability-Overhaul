@@ -3,7 +3,6 @@ package net.cloud.improved_damage.mixin;
 import com.google.common.collect.Lists;
 import net.minecraft.Util;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -14,6 +13,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.List;
+import java.util.Random;
 
 @Mixin(EnchantmentHelper.class)
 public abstract class MixinEnchanting {
@@ -32,7 +32,7 @@ public abstract class MixinEnchanting {
      * @reason
      */
     @Overwrite
-    public static int getEnchantmentCost(RandomSource p_44873_, int p_44874_, int p_44875_, ItemStack p_44876_) {
+    public static int getEnchantmentCost(Random p_44873_, int p_44874_, int p_44875_, ItemStack p_44876_) {
         Item item = p_44876_.getItem();
         int i = p_44876_.getItem().getEnchantmentValue();
         if (i <= 0) {
@@ -58,7 +58,7 @@ public abstract class MixinEnchanting {
      * @reason
      */
     @Overwrite
-    public static List<EnchantmentInstance> selectEnchantment(RandomSource p_44910_, ItemStack p_44911_, int p_44912_, boolean p_44913_) {
+    public static List<EnchantmentInstance> selectEnchantment(Random p_44910_, ItemStack p_44911_, int p_44912_, boolean p_44913_) {
         p_44912_ = (int) (p_44912_ * 0.69);
         List<EnchantmentInstance> list = Lists.newArrayList();
         Item item = p_44911_.getItem();

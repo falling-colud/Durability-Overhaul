@@ -1,11 +1,11 @@
 modLoader="javafml"
-loaderVersion="[43,)"
+loaderVersion="[40,)"
 license="Academic Free License v3.0"
 
 [[mods]]
 modId="improved_damage"
 version="1.0.0"
-displayName="Durabiity Overhaul"
+displayName="Durability Overhaul"
 credits="By Cloud"
 displayURL="https://legacy.curseforge.com/minecraft/mc-mods/durability-overhaul"
 logoFile="logo.png"
@@ -20,7 +20,7 @@ modId="forge" #mandatory
 # Does this dependency have to exist - if not, ordering below must be specified
 mandatory=true #mandatory
 # The version range of the dependency
-versionRange="[43,)" #mandatory
+versionRange="[40,)" #mandatory
 # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
 ordering="NONE"
 # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -29,14 +29,14 @@ side="BOTH"
 [[dependencies.improved_damage]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.2]"
+    versionRange="[1.18.2]"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.improved_damage]]
     modId="architectury"
     mandatory=true
-    versionRange="[6.5.90,)"
+    versionRange="[4.11.93,)"
     ordering="NONE"
     side="BOTH"
 
