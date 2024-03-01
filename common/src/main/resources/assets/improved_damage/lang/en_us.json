@@ -1,0 +1,10 @@
+{
+  "block.improved_damage.broken_anvil": "Broken Anvil",
+  "block.improved_damage.enchanter": "Enchanter",
+  "block.improved_damage.chipped_enchanter": "Chipped Enchanter",
+  "block.improved_damage.damaged_enchanter": "Damaged Enchanter",
+  "block.improved_damage.broken_enchanter": "Broken Enchanter",
+  "container.improved_damage.enchant": "Apply Enchantments",
+  "container.improved_damage.enchant.cost": "Enchantment Cost: %1$s",
+  "enchantment.improved_damage.durable": "Durable"
+}

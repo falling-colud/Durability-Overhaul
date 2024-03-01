@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "improved_damage:block/chipped_enchanter",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "improved_damage:block/chipped_enchanter",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "improved_damage:block/chipped_enchanter"
+    },
+    "facing=west": {
+      "model": "improved_damage:block/chipped_enchanter",
+      "y": 90
+    }
+  }
+}

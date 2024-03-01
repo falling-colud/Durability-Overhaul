@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "improved_damage",
+  "version": "${version}",
+
+  "name": "Durability Overhaul",
+  "description": "various new tweaks to durability behaivour",
+  "authors": ["Cloud"],
+  "contact": {},
+
+  "license": "All Rights Reserved",
+  "icon": "logo.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.cloud.improveddamage.fabric.ImprovedDamageFabric"
+    ],
+    "client": [
+      "net.cloud.improveddamage.fabric.ImprovedDamageFabricClient"
+    ]
+  },
+  "mixins": [
+    "improved_damage.mixins.json",
+    "improved_damage-common.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.6",
+    "architectury": ">=9.1.12",
+    "minecraft": ">=1.20.1"
+  }
+}

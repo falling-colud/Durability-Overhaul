@@ -1,0 +1,38 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "0 2",
+    "345",
+    "678"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:white_candle"
+    },
+    "2": {
+      "item": "minecraft:book"
+    },
+    "3": {
+      "item": "minecraft:oak_planks"
+    },
+    "4": {
+      "item": "minecraft:amethyst_block"
+    },
+    "5": {
+      "item": "minecraft:oak_planks"
+    },
+    "6": {
+      "item": "minecraft:oak_planks"
+    },
+    "7": {
+      "item": "minecraft:gold_block"
+    },
+    "8": {
+      "item": "minecraft:oak_planks"
+    }
+  },
+  "result": {
+    "item": "improved_damage:enchanter",
+    "count": 1
+  }
+}

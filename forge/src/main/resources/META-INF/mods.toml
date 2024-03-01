@@ -1,0 +1,39 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="Academic Free License v3.0"
+
+[[mods]]
+modId="improved_damage"
+version="1.0.0"
+displayName="Durability Overhaul"
+credits="By Cloud"
+displayURL="https://legacy.curseforge.com/minecraft/mc-mods/durability-overhaul"
+logoFile="logo.png"
+authors="Cloud"
+description='''
+various new tweaks to durability behaivour
+'''
+
+[[dependencies.improved_damage]] #optional
+    modId="forge" #mandatory
+    mandatory=true #mandatory
+    versionRange="[47,)" #mandatory
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.improved_damage]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.improved_damage]]
+    modId="architectury"
+    mandatory=true
+    versionRange="[9.1.12,)"
+    ordering="NONE"
+    side="BOTH"
+
+
+

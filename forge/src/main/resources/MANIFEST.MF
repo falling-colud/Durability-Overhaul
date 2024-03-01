@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Specification-Title: Durability Overhaul
+Specification-Vendor: improved_damage
+Specification-Version: 1
+Implementation-Title: improved_damage
+Implementation-Version: 4.2.1
+Implementation-Vendor: ImprovedDamage
+Implementation-Timestamp: 2023-07-06T17:05:47+1000
+MixinConfigs: improved_damage.mixins.json
+
