@@ -6,5 +6,7 @@
   "block.improved_damage.broken_enchanter": "Broken Enchanter",
   "container.improved_damage.enchant": "Apply Enchantments",
   "container.improved_damage.enchant.cost": "Enchantment Cost: %1$s",
-  "enchantment.improved_damage.durable": "Durable"
+  "enchantment.improved_damage.durable": "Durable",
+  "item.improved_damage.durability": "Durability",
+  "item.improved_damage.broken": "Broken"
 }

@@ -14,10 +14,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.cloud.improveddamage.fabric.ImprovedDamageFabric"
+      "net.cloud.improved_damage.fabric.ImprovedDamageFabric"
     ],
     "client": [
-      "net.cloud.improveddamage.fabric.ImprovedDamageFabricClient"
+      "net.cloud.improved_damage.fabric.ImprovedDamageFabricClient"
     ]
   },
   "mixins": [

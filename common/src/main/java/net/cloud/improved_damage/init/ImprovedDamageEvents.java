@@ -74,7 +74,7 @@ public class ImprovedDamageEvents {
 
                 level.setBlock(blockPos, setBlock, 2);
 
-                player.closeContainer();
+                player.containerMenu = player.inventoryMenu;
 
                 return EventResult.interruptTrue();
 
@@ -106,7 +106,7 @@ public class ImprovedDamageEvents {
 
                 level.setBlock(blockPos, setBlock, 2);
 
-                player.closeContainer();
+                player.containerMenu = player.inventoryMenu;
 
                 return EventResult.interruptTrue();
             } else if (blockState.is(ImprovedDamageModBlocks.BROKEN_ANVIL.get())) {

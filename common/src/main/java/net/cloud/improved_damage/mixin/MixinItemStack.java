@@ -8,10 +8,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
@@ -64,6 +61,14 @@ public abstract class MixinItemStack {
     }
 
     @Shadow @Nullable private Entity entityRepresentation;
+
+    @Shadow public abstract int getDamageValue();
+
+    @Shadow public abstract int getMaxDamage();
+
+    @Shadow public abstract int getBarColor();
+
+    @Shadow public abstract boolean isDamageableItem();
 
     @Inject(method = "getBarWidth", at = @At("RETURN"), cancellable = true)
     public void getBarWidth(CallbackInfoReturnable<Integer> cir) {
@@ -279,12 +284,12 @@ public abstract class MixinItemStack {
         ItemStack stack = ((ItemStack) (Object) this);
 
         List<Component> list = Lists.newArrayList();
-        MutableComponent mutablecomponent;
+        MutableComponent mutablecomponent = stack.getHoverName().copy();
 
         if (stack.getOrCreateTag().getBoolean("broken")) {
-            mutablecomponent = (Component.literal("Broken ")).append(stack.getHoverName()).withStyle(ChatFormatting.RED);
+            mutablecomponent.withStyle(ChatFormatting.RED);
         } else {
-            mutablecomponent = (Component.literal("")).append(stack.getHoverName()).withStyle(stack.getRarity().color);
+            mutablecomponent.withStyle(stack.getRarity().color);
         }
 
         if (stack.hasCustomHoverName()) {
@@ -425,7 +430,23 @@ public abstract class MixinItemStack {
             }
 
             //net.minecraftforge.event.ForgeEventFactory.onItemTooltip(stack, p_41652_, list, p_41653_);
-            return list;
+        }
+        if (this.isDamageableItem()) {
+
+            MutableComponent durabilityComponent = Component.translatable("item.improved_damage.durability").append(": ").withStyle(ChatFormatting.GRAY);
+
+            int damage = this.getDamageValue();
+            int maxDamage = this.getMaxDamage();
+            int durability = maxDamage - damage;
+
+            if (damage == 0)
+                durabilityComponent.append(Component.literal(String.valueOf(this.getMaxDamage())).withStyle(ChatFormatting.GRAY));
+            else if (durability == 0)
+                durabilityComponent.append(Component.translatable("item.improved_damage.broken").withStyle(ChatFormatting.RED));
+            else
+                durabilityComponent.append(Component.literal(String.valueOf(durability)).withStyle(Style.EMPTY.withColor(this.getBarColor()))).append(Component.literal("/" + this.getMaxDamage()).withStyle(ChatFormatting.GRAY));
+
+            list.add(durabilityComponent);
         }
 
         //net.minecraftforge.event.ForgeEventFactory.onItemTooltip(stack, p_41652_, list, p_41653_);
@@ -435,7 +456,7 @@ public abstract class MixinItemStack {
     @Inject(method = "getMaxDamage", at = @At("RETURN"), cancellable = true)
     public void getMaxDamage(CallbackInfoReturnable<Integer> cir) {
         ItemStack stack = ((ItemStack) (Object) this);
-        if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MENDING, stack) != 0)
+        if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MENDING, stack) != 0 && ImprovedDamageConfiguration.MENDING_DURABILITY_MULT > 0)
             cir.setReturnValue(cir.getReturnValue() * ImprovedDamageConfiguration.MENDING_DURABILITY_MULT);
     }
 

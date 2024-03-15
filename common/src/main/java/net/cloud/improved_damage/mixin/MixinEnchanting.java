@@ -1,6 +1,7 @@
 package net.cloud.improved_damage.mixin;
 
 import com.google.common.collect.Lists;
+import net.cloud.improved_damage.configuration.ImprovedDamageConfiguration;
 import net.minecraft.Util;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -33,16 +34,17 @@ public abstract class MixinEnchanting {
      */
     @Overwrite
     public static int getEnchantmentCost(RandomSource p_44873_, int p_44874_, int p_44875_, ItemStack p_44876_) {
-        Item item = p_44876_.getItem();
         int i = p_44876_.getItem().getEnchantmentValue();
+        int max_bookshelves = ImprovedDamageConfiguration.ENCHANTING_TABLE_MAX_BOOKSHELVES;
+        int max_level = ImprovedDamageConfiguration.ENCHANTING_TABLE_MAX_LEVEL;
         if (i <= 0) {
             return 0;
         } else {
-            if (p_44875_ > 25) {
-                p_44875_ = 25;
+            if (p_44875_ > max_bookshelves) {
+                p_44875_ = max_bookshelves;
             }
 
-            p_44875_ = (int) (p_44875_ * 20f/25f);
+            p_44875_ = (int) (p_44875_ * (max_level/2d)/max_bookshelves);
 
             int j = p_44873_.nextInt(8) + 1 + (p_44875_ >> 1) + p_44873_.nextInt(p_44875_ + 1);
             if (p_44874_ == 0) {

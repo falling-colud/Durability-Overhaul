@@ -18,6 +18,8 @@ public class ImprovedDamageConfiguration {
 	public static Double DURABLE_2_MULT;
 	public static Double DURABLE_3_MULT;
 	public static Integer DURABLE_NO_FLAT_LEVEL;
+	public static Integer ENCHANTING_TABLE_MAX_LEVEL;
+	public static Integer ENCHANTING_TABLE_MAX_BOOKSHELVES;
 	public static Integer MENDING_DURABILITY_MULT;
 	public static Boolean CRAFTING_REPAIR;
 	public static Boolean ANVIL_REPAIR;
@@ -44,10 +46,12 @@ public class ImprovedDamageConfiguration {
 		configs.addKeyValuePair(new Pair<>("key.improved_damage.durable_2_mult", 0.8), "the number the progression of the tool breaking will be multiplied by with durable 2");
 		configs.addKeyValuePair(new Pair<>("key.improved_damage.durable_3_mult", 0.7), "the number the progression of the tool breaking will be multiplied by with durable 3");
 		configs.addKeyValuePair(new Pair<>("key.improved_damage.durable_no_flat_level", 2), "the level of durable at which the flat reduction will stop being applied");
-		configs.addKeyValuePair(new Pair<>("key.improved_damage.mending_durability_mult", 2), "the multiplier by which mending will multiply the original durability when applied");
+		configs.addKeyValuePair(new Pair<>("key.improved_damage.mending_durability_mult", 2), "the multiplier by which mending will multiply the original durability when applied, set to 0 to disable the changes");
 		configs.addKeyValuePair(new Pair<>("key.improved_damage.anvil_repair_enabled", true), "if anvils can be repaired with iron blocks");
 		configs.addKeyValuePair(new Pair<>("key.improved_damage.crafting_repair_enabled", false), "if items can be repaired in the crafting grid");
-		
+		configs.addKeyValuePair(new Pair<>("key.improved_damage.enchanting_table_max_level", 40), "the max level you can reach on the third enchantment in an enchanting table");
+		configs.addKeyValuePair(new Pair<>("key.improved_damage.enchanting_table_max_bookshelves", 25), "the amount of bookshelves needed to reach the enchanting_table_max_level in the enchanting table");
+
 	}
 
 	private static void assignConfigs() {
@@ -62,6 +66,8 @@ public class ImprovedDamageConfiguration {
 		MENDING_DURABILITY_MULT = CONFIG.getOrDefault("key.improved_damage.mending_durability_mult", 2);
 		ANVIL_REPAIR = CONFIG.getOrDefault("key.improved_damage.anvil_repair_enabled", true);
 		CRAFTING_REPAIR = CONFIG.getOrDefault("key.improved_damage.crafting_repair_enabled", false);
+		ENCHANTING_TABLE_MAX_LEVEL = CONFIG.getOrDefault("key.improved_damage.enchanting_table_max_level", 40);
+		ENCHANTING_TABLE_MAX_BOOKSHELVES = CONFIG.getOrDefault("key.improved_damage.enchanting_table_max_bookshelves", 25);
 
 		ImprovedDamage.LOGGER.info("All " + configs.getConfigsList().size() + " configurations have been set properly");
 	}
